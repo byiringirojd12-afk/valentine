@@ -1,0 +1,91 @@
+.quiz-wrapper {
+  position: relative;
+  min-height: 100vh;
+  padding: 40px;
+  background: radial-gradient(circle at center, #1a0000, #000);
+  overflow: hidden;
+  color: white;
+  text-align: center;
+}
+
+.quiz-container,
+.result-container {
+  max-width: 700px;
+  margin: auto;
+  background: rgba(255, 0, 70, 0.08);
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.options {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.option-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(45deg, #ff1e56, #ff4d6d);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.option-btn:hover {
+  transform: scale(1.05);
+}
+
+.progress {
+  margin-top: 20px;
+  opacity: 0.7;
+}
+
+/* Floating Hearts */
+.floating-hearts::before {
+  content: "❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️";
+  position: absolute;
+  width: 100%;
+  font-size: 25px;
+  opacity: 0.1;
+  animation: floatUp 25s linear infinite;
+}
+
+/* Floating Flowers */
+.floating-flowers::before {
+  content: "🌹 🌸 🌺 🌹 🌸 🌺";
+  position: absolute;
+  width: 100%;
+  font-size: 25px;
+  opacity: 0.1;
+  animation: floatUp 35s linear infinite;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(100vh); }
+  100% { transform: translateY(-100vh); }
+}
+
+.fade-in {
+  animation: fadeIn 1.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Optimization */
+@media (max-width: 600px) {
+  .quiz-container,
+  .result-container {
+    padding: 20px;
+  }
+
+  .option-btn {
+    font-size: 14px;
+  }
+}
