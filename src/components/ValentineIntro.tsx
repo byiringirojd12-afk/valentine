@@ -1,9 +1,17 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import heartbeatSound from "../assets/heartbeat.mp3";
 import romanticMusic from "../assets/romantic.mp3";
 import LanguageSwitcher from "./LanguageSwitcher";
 
-const stories = {
+type Language = "en" | "fr" | "rw";
+
+interface ValentineIntroProps {
+  onFinish: () => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+}
+
+const stories: Record<Language, string> = {
   en: `On the day Mr Offspace first met Mrs Robot Vanessa, 
 he never imagined destiny was quietly writing their story...
 
@@ -80,40 +88,61 @@ How powerful is their love connection?`,
 il ne savait pas que le destin écrivait leur histoire...`,
 
   rw: `Umunsi Mr Offspace yahuriyeho na Mrs Robot Vanessa,
-ntiyigeze amenya ko umutima we watangiye urugendo rushya...`
+ntiyigeze amenya ko umutima we watangiye urugendo rushya...`,
 };
 
-export default function ValentineIntro({ onFinish, language, setLanguage }) {
-  const [text, setText] = useState("");
-  const [index, setIndex] = useState(0);
-  const [showButton, setShowButton] = useState(false);
+export default function ValentineIntro({
+  onFinish,
+  language,
+  setLanguage,
+}: ValentineIntroProps) {
+  const [text, setText] = useState<string>("");
+  const [index, setIndex] = useState<number>(0);
+  const [showButton, setShowButton] = useState<boolean>(false);
 
-  const heartbeatRef = useRef(new Audio(heartbeatSound));
-  const musicRef = useRef(new Audio(romanticMusic));
+  const heartbeatRef = useRef<HTMLAudioElement>(new Audio(heartbeatSound));
+  const musicRef = useRef<HTMLAudioElement>(new Audio(romanticMusic));
 
+  // Play audio on first click
   useEffect(() => {
     heartbeatRef.current.loop = true;
     musicRef.current.loop = true;
     musicRef.current.volume = 0.3;
 
     const playAudio = () => {
-      heartbeatRef.current.play();
-      musicRef.current.play();
+      heartbeatRef.current.play().catch(() => {});
+      musicRef.current.play().catch(() => {});
       document.removeEventListener("click", playAudio);
     };
 
     document.addEventListener("click", playAudio);
+
+    return () => {
+      document.removeEventListener("click", playAudio);
+    };
   }, []);
 
+  // Reset typing effect when language changes
   useEffect(() => {
-    if (index < stories[language].length) {
+    setText("");
+    setIndex(0);
+    setShowButton(false);
+  }, [language]);
+
+  // Typewriter effect
+  useEffect(() => {
+    const story = stories[language];
+
+    if (index < story.length) {
       const timeout = setTimeout(() => {
-        setText(prev => prev + stories[language][index]);
-        setIndex(index + 1);
+        setText((prev) => prev + story[index]);
+        setIndex((prev) => prev + 1);
       }, window.innerWidth < 600 ? 15 : 25);
+
       return () => clearTimeout(timeout);
     } else {
-      setTimeout(() => setShowButton(true), 1500);
+      const btnTimeout = setTimeout(() => setShowButton(true), 1500);
+      return () => clearTimeout(btnTimeout);
     }
   }, [index, language]);
 
@@ -129,9 +158,7 @@ export default function ValentineIntro({ onFinish, language, setLanguage }) {
 
         {showButton && (
           <div className="dramatic-section">
-            <h2 className="dramatic-text">
-              💘 The Love Test Begins Now...
-            </h2>
+            <h2 className="dramatic-text">💘 The Love Test Begins Now...</h2>
             <button className="start-btn" onClick={onFinish}>
               Start Quiz ❤️
             </button>

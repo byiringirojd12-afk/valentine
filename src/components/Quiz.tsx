@@ -1,15 +1,36 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./quizEffects.css";
+import "./LanguageSwitcher.jsx"
 
-const questions = [
+// Define supported languages
+export type Language = "en" | "fr" | "rw";
+
+// Option and Question types
+type Option = {
+  text: string;
+  points: number;
+};
+
+type Question = {
+  question: string;
+  options: Option[];
+};
+
+// Props for the Quiz component
+interface QuizProps {
+  language: Language; // matches ValentineIntro
+}
+
+// Quiz questions
+const questions: Question[] = [
   {
     question: "When did Mr Offspace truly realize his feelings?",
     options: [
       { text: "At first glance", points: 5 },
       { text: "During a quiet evening reflection", points: 10 },
       { text: "After months of deep talks", points: 8 },
-      { text: "When she smiled unexpectedly", points: 7 }
-    ]
+      { text: "When she smiled unexpectedly", points: 7 },
+    ],
   },
   {
     question: "What made Mrs Robot Vanessa special to him?",
@@ -17,8 +38,8 @@ const questions = [
       { text: "Her beauty", points: 5 },
       { text: "Her calm intelligence", points: 10 },
       { text: "Her mystery", points: 7 },
-      { text: "Her kindness", points: 9 }
-    ]
+      { text: "Her kindness", points: 9 },
+    ],
   },
   {
     question: "How did his love grow?",
@@ -26,8 +47,8 @@ const questions = [
       { text: "Suddenly and intense", points: 6 },
       { text: "Slowly and deeply", points: 10 },
       { text: "Confusing at first", points: 5 },
-      { text: "Unexpectedly fast", points: 7 }
-    ]
+      { text: "Unexpectedly fast", points: 7 },
+    ],
   },
   {
     question: "What did he miss most when she was away?",
@@ -35,8 +56,8 @@ const questions = [
       { text: "Her messages", points: 8 },
       { text: "Her voice", points: 10 },
       { text: "Her advice", points: 7 },
-      { text: "Her presence", points: 9 }
-    ]
+      { text: "Her presence", points: 9 },
+    ],
   },
   {
     question: "Their love feels like...",
@@ -44,8 +65,8 @@ const questions = [
       { text: "A temporary spark", points: 3 },
       { text: "A growing foundation", points: 10 },
       { text: "A beautiful journey", points: 9 },
-      { text: "An exciting adventure", points: 7 }
-    ]
+      { text: "An exciting adventure", points: 7 },
+    ],
   },
   {
     question: "What defines their bond?",
@@ -53,8 +74,8 @@ const questions = [
       { text: "Attraction", points: 5 },
       { text: "Emotional connection", points: 10 },
       { text: "Shared laughter", points: 8 },
-      { text: "Shared dreams", points: 9 }
-    ]
+      { text: "Shared dreams", points: 9 },
+    ],
   },
   {
     question: "When she smiles, he feels...",
@@ -62,8 +83,8 @@ const questions = [
       { text: "Peace", points: 10 },
       { text: "Butterflies", points: 8 },
       { text: "Excited", points: 7 },
-      { text: "Inspired", points: 9 }
-    ]
+      { text: "Inspired", points: 9 },
+    ],
   },
   {
     question: "Their love would survive...",
@@ -71,8 +92,8 @@ const questions = [
       { text: "Distance", points: 9 },
       { text: "Time", points: 10 },
       { text: "Challenges", points: 10 },
-      { text: "Doubts", points: 8 }
-    ]
+      { text: "Doubts", points: 8 },
+    ],
   },
   {
     question: "If their love had a symbol, it would be...",
@@ -80,8 +101,8 @@ const questions = [
       { text: "A rose", points: 8 },
       { text: "A heartbeat", points: 10 },
       { text: "A star", points: 7 },
-      { text: "A flame", points: 9 }
-    ]
+      { text: "A flame", points: 9 },
+    ],
   },
   {
     question: "What makes their story unique?",
@@ -89,8 +110,8 @@ const questions = [
       { text: "Fate", points: 8 },
       { text: "Depth", points: 10 },
       { text: "Timing", points: 7 },
-      { text: "Connection", points: 9 }
-    ]
+      { text: "Connection", points: 9 },
+    ],
   },
   {
     question: "What is the core of their relationship?",
@@ -98,8 +119,8 @@ const questions = [
       { text: "Trust", points: 10 },
       { text: "Passion", points: 8 },
       { text: "Loyalty", points: 9 },
-      { text: "Understanding", points: 10 }
-    ]
+      { text: "Understanding", points: 10 },
+    ],
   },
   {
     question: "This Valentine, their love feels...",
@@ -107,36 +128,37 @@ const questions = [
       { text: "Unbreakable", points: 10 },
       { text: "Growing stronger", points: 9 },
       { text: "Magical", points: 8 },
-      { text: "Destined", points: 10 }
-    ]
-  }
+      { text: "Destined", points: 10 },
+    ],
+  },
 ];
 
-export default function Quiz() {
-  const [current, setCurrent] = useState(0);
-  const [score, setScore] = useState(0);
-  const [finished, setFinished] = useState(false);
+export default function Quiz({ language: _language }: QuizProps) {
+  const [current, setCurrent] = useState<number>(0);
+  const [score, setScore] = useState<number>(0);
+  const [finished, setFinished] = useState<boolean>(false);
 
-  const handleAnswer = (points) => {
-    setScore(score + points);
+  // Handle user answer
+  const handleAnswer = (points: number) => {
+    setScore((prev) => prev + points);
 
     if (current + 1 < questions.length) {
-      setCurrent(current + 1);
+      setCurrent((prev) => prev + 1);
     } else {
       setFinished(true);
     }
   };
 
+  // Calculate final score
   const maxScore = questions.length * 10;
   const percentage = Math.round((score / maxScore) * 100);
 
-  const getResultMessage = () => {
+  // Determine result message
+  const getResultMessage = (): string => {
     if (percentage >= 90)
       return "🔥 Legendary Soulmates — A love written beyond time.";
-    if (percentage >= 75)
-      return "💖 Deep Emotional Bond — Strong and lasting.";
-    if (percentage >= 60)
-      return "🌹 Growing Romantic Connection.";
+    if (percentage >= 75) return "💖 Deep Emotional Bond — Strong and lasting.";
+    if (percentage >= 60) return "🌹 Growing Romantic Connection.";
     return "✨ A Story Still Unfolding.";
   };
 
@@ -150,9 +172,9 @@ export default function Quiz() {
           <h2>{questions[current].question}</h2>
 
           <div className="options">
-            {questions[current].options.map((opt, i) => (
+            {questions[current].options.map((opt, idx) => (
               <button
-                key={i}
+                key={idx}
                 onClick={() => handleAnswer(opt.points)}
                 className="option-btn"
               >
